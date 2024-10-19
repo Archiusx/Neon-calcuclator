@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Calculator with Taskbar</title>
+    <style>
+        /* Resetting default margins and paddings */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Full-screen background */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #fff;
+        }
+
+        /* Container for interactive section */
+        .interactive-container {
+            background-color: #111;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin: auto;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Taskbar styling */
+        .taskbar {
+            background-color: #111;
+            padding: 10px 20px;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .taskbar-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e60000;
+            text-shadow: 0 0 5px #ff0000, 0 0 15px #ff3333;
+        }
+
+        /* Neon calculator icon styling */
+        .calculator-icon {
+            background-color: #111;
+            color: white;
+            font-size: 50px;
+            padding: 20px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 10px #e60000, 0 0 40px #ff0000;
+            border-radius: 50%;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .calculator-icon:hover {
+            background-color: #222;
+            box-shadow: 0 0 20px #ff1a1a, 0 0 60px #ff3333;
+        }
+
+        /* Neon theme calculator styling */
+        .calculator {
+            display: none;
+            background-color: #222;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px #ff0000, 0 0 40px #ff3333;
+            position: relative;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        /* Calculator header with close and minimize buttons */
+        .calculator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .calculator-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-button {
+            background-color: #e60000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .header-button:hover {
+            background-color: #ff1a1a;
+        }
+
+        /* Calculator display and button styling */
+        .calculator input {
+            width: 100%;
+            height: 50px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            text-align: right;
+            padding-right: 10px;
+            font-size: 24px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px #e60000;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .calculator button {
+            background-color: #111;
+            color: #fff;
+            font-size: 18px;
+            padding: 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 10px;
+            width: 20%;
+            cursor: pointer;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .calculator button:hover {
+            box-shadow: 0 0 20px #ff1a1a, 0 0 30px #ff3333;
+        }
+
+        .calculator-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Green glow when the result is calculated */
+        .green-glow {
+            box-shadow: 0 0 20px #00ff00, 0 0 40px #00cc00;
+        }
+
+        .green-text {
+            color: #00ff00;
+            box-shadow: inset 0 0 10px #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="interactive-container">
+        <!-- Calculator Icon -->
+        <button class="calculator-icon" id="calculatorIcon">🔴</button>
+        <p>Tap the icon to open the calculator</p>
+
+        <!-- Calculator Section -->
+        <div class="calculator" id="calculator">
+            <div class="calculator-header">
+                <span class="calculator-title">Neon Calculator</span>
+                <div class="header-buttons">
+                    <button class="header-button" id="minimizeButton">_</button>
+                    <button class="header-button" id="closeButton">X</button>
+                </div>
+            </div>
+            
+            <input type="text" id="display" disabled>
+
+            <div class="calculator-row">
+                <button onclick="clearDisplay()">C</button>
+                <button onclick="deleteLast()">DEL</button>
+                <button onclick="appendToDisplay('%')">%</button>
+                <button onclick="appendToDisplay('/')">/</button>
+            </div>
+            <div class="calculator-row">
+                <button onclick="appendToDisplay('7')">7</button>
+                <button onclick="appendToDisplay('8')">8</button>
+                <button onclick="appendToDisplay('9')">9</button>
+                <button onclick="appendToDisplay('*')">*</button>
+            </div>
+            <div class="calculator-row">
+                <button onclick="appendToDisplay('4')">4</button>
+                <button onclick="appendToDisplay('5')">5</button>
+                <button onclick="appendToDisplay('6')">6</button>
+                <button onclick="appendToDisplay('-')">-</button>
+            </div>
+            <div class="calculator-row">
+                <button onclick="appendToDisplay('1')">1</button>
+                <button onclick="appendToDisplay('2')">2</button>
+                <button onclick="appendToDisplay('3')">3</button>
+                <button onclick="appendToDisplay('+')">+</button>
+            </div>
+            <div class="calculator-row">
+                <button onclick="appendToDisplay('0')">0</button>
+                <button onclick="appendToDisplay('.')">.</button>
+                <button onclick="calculateResult()" style="width: calc(60% - 10px);">=</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taskbar Section -->
+    <div class="taskbar">
+        <span class="taskbar-name">Rage X //~</span>
+    </div>
+
+    <script>
+        // JavaScript to toggle calculator visibility
+        const calculatorIcon = document.getElementById('calculatorIcon');
+        const calculator = document.getElementById('calculator');
+        const closeButton = document.getElementById('closeButton');
+        const minimizeButton = document.getElementById('minimizeButton');
+        const display = document.getElementById('display');
+
+        calculatorIcon.addEventListener('click', function() {
+            calculator.style.display = 'block';
+        });
+
+        closeButton.addEventListener('click', function() {
+            calculator.style.display = 'none';
+        });
+
+        minimizeButton.addEventListener('click', function() {
+            calculator.style.display = 'none';
+        });
+
+        // Calculator functions
+        function appendToDisplay(value) {
+            display.classList.remove('green-text');
+            display.value += value;
+        }
+
+        function clearDisplay() {
+            display.value = '';
+            display.classList.remove('green-text');
+        }
+
+        function deleteLast() {
+            let currentDisplay = display.value;
+            display.value = currentDisplay.slice(0, -1);
+        }
+
+        function calculateResult() {
+            let expression = display.value;
+            try {
+                // Evaluate the expression and show the result
+                display.value = eval(expression);
+                
+                // Add the green glow and text effect
+                display.classList.add('green-text');
+                calculator.classList.add('green-glow');
+                
+ // Remove green glow after 2 seconds
+                setTimeout(() => {
+                    calculator.classList.remove('green-glow');
+                }, 2000);
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+    </script>
+</body>
+</html
